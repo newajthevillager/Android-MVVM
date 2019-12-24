@@ -1,5 +1,6 @@
 package com.example.githubapi.adapters;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,11 +8,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.githubapi.R;
+import com.example.githubapi.databinding.UserItemBinding;
 import com.example.githubapi.models.User;
 
 import java.util.List;
@@ -27,21 +31,30 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     @NonNull
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent, false);
-        return new UserViewHolder(view);
+        UserItemBinding binding = DataBindingUtil.inflate(
+                LayoutInflater.from(parent.getContext()),
+                R.layout.user_item,
+                parent, false
+        );
+        return new UserViewHolder(binding.getRoot());
     }
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = users.get(position);
-        holder.nameTv.setText(user.getName().getFirst() + " " + user.getName().getLast());
-        holder.emailTv.setText(user.getEmail());
-        holder.genderTv.setText(user.getGender());
-        Glide.with(holder.imageView.getContext())
-                .load(user.getPicture().getThumbnail())
+        UserItemBinding binding = DataBindingUtil.bind(holder.itemView);
+        binding.setUser(user);
+        binding.executePendingBindings();
+    }
+
+    @BindingAdapter({"imgUrl", "placeHolder"})
+    public static void bindProilePic(ImageView imageView, String url, Drawable drawable) {
+        Glide.with(imageView.getContext())
+                .load(url)
+                .placeholder(drawable)
                 .fitCenter()
                 .apply(RequestOptions.circleCropTransform())
-                .into(holder.imageView);
+                .into(imageView);
     }
 
     @Override
@@ -51,17 +64,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
     class UserViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView imageView;
-        TextView nameTv, emailTv, genderTv;
-
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            imageView = itemView.findViewById(R.id.ivProPic);
-            nameTv = itemView.findViewById(R.id.tvName);
-            emailTv = itemView.findViewById(R.id.tvEmail);
-            genderTv = itemView.findViewById(R.id.tvGender);
-
         }
     }
 

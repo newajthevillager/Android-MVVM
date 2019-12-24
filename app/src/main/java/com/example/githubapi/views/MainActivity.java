@@ -1,6 +1,7 @@
 package com.example.githubapi.views;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,6 +12,7 @@ import android.util.Log;
 
 import com.example.githubapi.R;
 import com.example.githubapi.adapters.UsersAdapter;
+import com.example.githubapi.databinding.ActivityMainBinding;
 import com.example.githubapi.models.ApiResponse;
 import com.example.githubapi.models.User;
 import com.example.githubapi.viewmodels.UsersViewModel;
@@ -19,7 +21,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    RecyclerView recyclerView;
     UsersAdapter adapter;
 
     List<User> users = new ArrayList<>();
@@ -28,13 +29,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        recyclerView = findViewById(R.id.rvUsers);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         adapter = new UsersAdapter(users);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
+        binding.rvUsers.setLayoutManager(layoutManager);
+        binding.rvUsers.setAdapter(adapter);
 
         usersViewModel = ViewModelProviders.of(this).get(UsersViewModel.class);
 
